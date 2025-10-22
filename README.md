@@ -31,11 +31,11 @@ Python time module.
 | Criteria | Details |
 |---------|---------|
 | Provider used (circle one) | **LocationIQ / Mapbox/ other -provide detail** |
-| API Base URL | `_______________________________` |
-| Endpoint for reverse geocoding | `_______________________________` |
-| Authentication method | `_______________________________` |
-| Required query parameters | `_______________________________` |
-| Sample request with latitude/longitude | `_______________________________` |
+| API Base URL | `https://us1.locationiq.com/v1` |
+| Endpoint for reverse geocoding | `/reverse.php` |
+| Authentication method | `API Key (App Token)` |
+| Required query parameters | `key (Your API key), lat, lon, format=json` |
+| Sample request with latitude/longitude | `(https://us1.locationiq.com/v1/reverse.php?key=YOUR_API_KEY&lat=51.5034&lon=-0.1276&format=json)_` |
 | Sample JSON response (formatted example) |
 ```
 ```
