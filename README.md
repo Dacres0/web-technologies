@@ -22,7 +22,7 @@ Python time module.
 |---------|---------|
 | API Base URL | `[http://api.open-notify.org]` |
 | Endpoint for current ISS location | `/iss-now.json` |
-| Sample response format (example JSON) |
+| Sample response format (example JSON) | ```json |
 ```
 ```
 |
