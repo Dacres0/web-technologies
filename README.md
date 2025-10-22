@@ -65,13 +65,13 @@ Python time module.
 ### 🚀 MVC Pattern in Space Bot
 | Component | Description |
 |------------|-------------|
-| **Model** | |
-| **View** | |
-| **Controller** | |
+| **Model** | | Handles the data and API interactions. For example, Python functions that call the ISS API and LocationIQ API to retrieve or process data
+| **View** | | The presentation layer – Webex messages or cards displayed to the user
+| **Controller** | |  The logic layer – decides what data to fetch and what message to send based on user commands
 #### Example:
-- Model:
-- View:
-- Controller:
+- Model: Python functions `get_iss_location()` and `get_place_name(lat, lon)`
+- View: Formatted Webex message showing location and time
+- Controller: `spacebot.py` interprets user commands (“Where is the ISS?”) and triggers API calls
 ---
 ### 🚀 Notes
 - Use official documentation for accuracy (e.g. developer.webex.com, locationiq.com
