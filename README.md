@@ -59,9 +59,9 @@ Python time module.
 - **Server**: Hosts the APIs (Webex API, ISS API, LocationIQ API). It processes incoming requests and returns data (JSON responses)
 - (Explain the communication between them & include a block diagram )
 ### 🚀 RESTful API Usage
--
--
--
+- APIs use **HTTP methods** (GET, POST) to exchange data
+- Each API endpoint represents a **resource** (e.g., /messages or /iss-now.json)
+- Authentication (e.g., Bearer Token or API Key)
 ### 🚀 MVC Pattern in Space Bot
 | Component | Description |
 |------------|-------------|
