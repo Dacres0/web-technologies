@@ -15,7 +15,6 @@ Python time module.
 | Endpoint to get messages | `/messages` |
 | Endpoint to send message | `/messages` |
 | Required headers | `Authorization: Bearer <your_token>
-Content-Type: application/json` |
 | Sample full GET or POST request | `[] |
 ---
 ## Section 2: ISS Current Location API (3 marks)
