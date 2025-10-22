@@ -16,12 +16,12 @@ Python time module.
 | Endpoint to send message | `/messages` |
 | Required headers | `Authorization: Bearer <your_token>
 Content-Type: application/json` |
-| Sample full GET or POST request | `[_______________________________](https://webexapis.com/v1/messages
+| Sample full GET or POST request | `[https://webexapis.com/v1/messages
 Headers:
 Authorization: Bearer NmRm...b3f9
 Content-Type: application/json
 Body:
-json<br>{<br> "roomId": "YOUR_ROOM_ID",<br> "text": "Hello from the Webex API!"<br>})` |
+json<br>{<br> "roomId": "YOUR_ROOM_ID",<br> "text": "Hello from the Webex API!"<br>})`] |
 ---
 ## Section 2: ISS Current Location API (3 marks)
 | Criteria | Details |
