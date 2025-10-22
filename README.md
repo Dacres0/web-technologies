@@ -36,7 +36,7 @@ Python time module.
 | Authentication method | `API Key (App Token)` |
 | Required query parameters | `key (Your API key), lat, lon, format=json` |
 | Sample request with latitude/longitude | `(https://us1.locationiq.com/v1/reverse.php?key=YOUR_API_KEY&lat=51.5034&lon=-0.1276&format=json)_` |
-| Sample JSON response (formatted example) |
+| Sample JSON response (formatted example) | ```json
 ```
 ```
 |
