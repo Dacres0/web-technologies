@@ -20,7 +20,7 @@ Python time module.
 ## Section 2: ISS Current Location API (3 marks)
 | Criteria | Details |
 |---------|---------|
-| API Base URL | `_______________________________` |
+| API Base URL | `[http://api.open-notify.org]` |
 | Endpoint for current ISS location | `_______________________________` |
 | Sample response format (example JSON) |
 ```
