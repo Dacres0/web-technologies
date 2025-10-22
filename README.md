@@ -55,8 +55,8 @@ Python time module.
 ---
 ## 🚀 Section 5: Web Architecture & MVC Design Pattern (12 marks)
 ### 🚀 Web Architecture – Client-Server Model
-- **Client**:
-- **Server**:
+- **Client**: The user interface or application that sends requests (e.g., Space Bot on Webex)
+- **Server**: Hosts the APIs (Webex API, ISS API, LocationIQ API). It processes incoming requests and returns data (JSON responses)
 - (Explain the communication between them & include a block diagram )
 ### 🚀 RESTful API Usage
 -
