@@ -15,7 +15,8 @@ Python time module.
 | Endpoint to get messages | `/messages` |
 | Endpoint to send message | `/messages` |
 | Required headers | `Authorization: Bearer <your_token>
-| Sample full GET or POST request | `[] |
+| Sample full GET or POST request | `[GET: https://webexapis.com/v1/rooms
+(Add header: Authorization: Bearer <your_token>)] |
 ---
 ## Section 2: ISS Current Location API (3 marks)
 | Criteria | Details |
