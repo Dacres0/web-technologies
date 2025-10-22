@@ -44,13 +44,14 @@ Python time module.
 ## 🚀 Section 4: Epoch to Human Time Conversion (Python time module) (2 marks)
 | Criteria | Details |
 |---------|---------|
-| Library used | `_______________________________` |
-| Function used to convert epoch | `_______________________________` |
-| Sample code to convert timestamp |
+| Library used | `time` |
+| Function used to convert epoch | `time.ctime() time.gmtime()` |
+| Sample code to convert timestamp | ```python import time
 ```
 ```
 |
-| Output (human-readable time) | `_______________________________` |
+| Output (human-readable time) | ``Mon Mar 21 09:21:12 2024` |
+*changes with the date and time
 ---
 ## 🚀 Section 5: Web Architecture & MVC Design Pattern (12 marks)
 ### 🚀 Web Architecture – Client-Server Model
