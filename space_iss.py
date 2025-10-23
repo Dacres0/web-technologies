@@ -35,7 +35,7 @@ from iso3166 import countries
 # 2. Complete the if statement to ask the user for the Webex access token.
 choice = input("Do you wish to use the hard-coded Webex token? (y/n) ")
 if choice.lower() == 'n':
- user_token = input (please enter your webex access token: ")
+ user_token = input("please enter your webex access token: ")
  accessToken = f"Bearer {user_token}"
 else:
     accessToken = "Bearer NjM5ZjYwODItYWJlNC00MjhkLWFlZDctMGNiN2Q0NTAxMWQxMjk0MTFkZjAtMTAz_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
@@ -100,7 +100,7 @@ while True:
                          headers = {"Authorization": accessToken}
                     )
     # verify if the retuned HTTP status code is 200/OK
-    if not r.status_code == 200:
+    if not r.status_code != 200:
         raise Exception( "Incorrect reply from Webex API. Status code: {}. Text: {}".format(r.status_code, r.text))
 
     json_data = r.json()
@@ -221,6 +221,7 @@ while True:
         else:
             print("Message successfully posted to Webex.")
                 
+
 
 
 
