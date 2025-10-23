@@ -155,7 +155,7 @@ while True:
     
 # 10. Provide the URL to the Reverse GeoCode API.
     # Get location information using the API reverse geocode service using the HTTP GET method
-        r = requests.get("<!!!REPLACEME with URL!!!>", 
+        r = requests.get("https://us1.locationiq.com/v1/reverse.php", 
                              params = mapsAPIGetParameters
                         )
 
@@ -204,6 +204,7 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
 
