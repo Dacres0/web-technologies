@@ -160,10 +160,11 @@ while True:
                         )
 
     # Verify if the returned JSON data from the API service are OK
-        json_data = <!!!REPLACEME with code>
-        
-        <!!!REPLACEME with code for error handling in case no response>
-
+         json_data = r.json()
+        if r.status_code != 200 or "address" not in json_data:
+            print("Error retrieving reverse geocode data.")
+            continue
+            
 # 11. Store the location received from the API in a required variables
         CountryResult = json_data["<!!!REPLACEME!!!> with path to adminArea1 key!!!>"]
         <!!!REPLACEME with code to save state, city, street etc>
@@ -204,6 +205,7 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
 
