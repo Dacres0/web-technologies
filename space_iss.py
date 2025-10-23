@@ -166,8 +166,11 @@ while True:
             continue
             
 # 11. Store the location received from the API in a required variables
-        CountryResult = json_data["<!!!REPLACEME!!!> with path to adminArea1 key!!!>"]
-        <!!!REPLACEME with code to save state, city, street etc>
+        address = json_data["address"]
+        CountryResult = address.get("country_code", "XZ").upper()
+        StateResult = address.get("state", "Unknown")
+        CityResult = address.get("city", address.get("town", "Unknown"))
+        StreetResult = address.get("road", "Unknown")
         
         #Find the country name using ISO3611 country code
         if not CountryResult == "XZ":
@@ -205,6 +208,7 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
 
