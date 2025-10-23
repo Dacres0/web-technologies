@@ -126,11 +126,13 @@ while True:
         time.sleep(seconds)     
     
 # 6. Provide the URL to the ISS Current Location API.         
-        r = requests.get("<!!!REPLACEME with URL!!!>")
+        r = requests.get("http://api.open-notify.org/iss-now.json")
         
         json_data = <!!!REPLACEME with code>
         
-        <!!!REPLACEME with code for error handling in case not success response>
+          if r.status_code != 200 or json_data["message"] != "success":
+            print("Error retrieving ISS location data.")
+            continue
 
 # 7. Record the ISS GPS coordinates and timestamp.
 
@@ -199,6 +201,7 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
 
