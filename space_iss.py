@@ -105,17 +105,19 @@ while True:
 
     json_data = r.json()
     if len(json_data["items"]) == 0:
-         <!!!REPLACEME with code for error handling>    
+        print("No messages found in this room yet. Waiting for a new message...")
+        continue   
     
     messages = json_data["items"]
     message = messages[0]["text"]
-    <!!!REPLACEME with print code to print message>  
+    print(f"Latest message received: {message}")
     
     if message.find("/") == 0:    
         if (message[1:].isdigit()):
             seconds = int(message[1:])  
         else:
-             <!!!REPLACEME with code for error handling>
+             print("Invalid command format. Please enter /<number> (e.g. /5).")
+            continue
     
     #for the sake of testing, the max number of seconds is set to 5.
         if seconds > 5:
@@ -197,6 +199,7 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
 
