@@ -95,7 +95,7 @@ while True:
                             "max": 1
                     }
 # 5. Provide the URL to the Webex messages API.    
-    r = requests.get("<!!!REPLACEME with URL!!!>", 
+    r = requests.get("https://webexapis.com/v1/messages", 
                          params = GetParameters, 
                          headers = {"Authorization": accessToken}
                     )
@@ -197,6 +197,7 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
 
