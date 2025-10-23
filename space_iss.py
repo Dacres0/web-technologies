@@ -146,9 +146,12 @@ while True:
    
 # 9. Provide your Geoloaction API consumer key.
     
-        mapsAPIGetParameters = { 
-                                <!!!REPLACEME with all the required paramenters by the api>
-                               }
+        mapsAPIGetParameters = {
+            "key": "<YOUR_LOCATIONIQ_OR_OTHER_API_KEY>",
+            "lat": lat,
+            "lon": lng,
+            "format": "json"
+        }
     
 # 10. Provide the URL to the Reverse GeoCode API.
     # Get location information using the API reverse geocode service using the HTTP GET method
@@ -201,6 +204,7 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
 
