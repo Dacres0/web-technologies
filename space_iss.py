@@ -55,7 +55,7 @@ if not r.status_code == 200:
 print("\nList of available rooms:")
 rooms = r.json()["items"]
 for room in rooms:
-    <!!!REPLACEME with print code to finish the loop>
+     print(f"Room Type: {room['type']} | Title: {room['title']}")
 
 #######################################################################################
 # SEARCH FOR WEBEX ROOM TO MONITOR
@@ -197,5 +197,6 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
