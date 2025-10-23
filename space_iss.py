@@ -65,7 +65,7 @@ for room in rooms:
 # DO NOT EDIT CODE IN THIS BLOCK
 #######################################################################################
 
-<!!!REPLACEME with code to start the loop and add break at appropriate place>:
+while True:
     roomNameToSearch = input("Which room should be monitored for the /seconds messages? ")
     roomIdToGetMessages = None
     
@@ -82,7 +82,7 @@ for room in rooms:
         print("Sorry, I didn't find any room with " + roomNameToSearch + " in it.")
         print("Please try again...")
     else:
-        <!!!REPLACEME with code to exit the loop>       
+        break       
 ######################################################################################
 # WEBEX BOT CODE
 #  Starts Webex bot to listen for and respond to /seconds messages.
@@ -197,6 +197,7 @@ while True:
                          )
         <!!!REPLACEME with code for error handling in case request not successfull>
                 
+
 
 
 
