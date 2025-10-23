@@ -31,12 +31,12 @@
 import requests 
 import json
 import time
-from is03166 import countries
+from iso3166 import countries
 # 2. Complete the if statement to ask the user for the Webex access token.
 choice = input("Do you wish to use the hard-coded Webex token? (y/n) ")
 if choice.lower() == 'n':
- user_token =input (please enter your webex access token: ")
- accessToken = f"Bearer {user_token}
+ user_token = input (please enter your webex access token: ")
+ accessToken = f"Bearer {user_token}"
 else:
     accessToken = "Bearer NjM5ZjYwODItYWJlNC00MjhkLWFlZDctMGNiN2Q0NTAxMWQxMjk0MTFkZjAtMTAz_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
 
@@ -100,7 +100,7 @@ while True:
                          headers = {"Authorization": accessToken}
                     )
     # verify if the retuned HTTP status code is 200/OK
-    if not r.status_code ==  <!!!REPLACEME with http code>:
+    if not r.status_code == 200:
         raise Exception( "Incorrect reply from Webex API. Status code: {}. Text: {}".format(r.status_code, r.text))
 
     json_data = r.json()
@@ -128,7 +128,7 @@ while True:
 # 6. Provide the URL to the ISS Current Location API.         
         r = requests.get("http://api.open-notify.org/iss-now.json")
         
-        json_data = <!!!REPLACEME with code>
+        json_data = r.json()
         
           if r.status_code != 200 or json_data["message"] != "success":
             print("Error retrieving ISS location data.")
@@ -181,33 +181,47 @@ while True:
         #responseMessage = "On {}, the ISS was flying over the following location: \n{} \n{}, {} \n{}\n({}\", {}\")".format(timeString, StreetResult, CityResult, StateResult, CountryResult, lat, lng)
 
         if CountryResult == "XZ":
-            responseMessage = "On {}, the ISS was flying over a body of water at latitude {}° and longitude {}°.".format(timeString, lat, lng)
-        
-<!!!REPLACEME with if statements to compose the message to display the current ISS location in the Webex Team room!!!>
-        elif
-        else
+            responseMessage = (
+                f"On {timeString}, the ISS was flying over a body of water "
+                f"at latitude {lat}° and longitude {lng}°."
+            )
+        elif CityResult != "Unknown":
+            responseMessage = (
+                f"In {CityResult}, {StateResult}, the ISS was flying over on {timeString}.\n"
+                f"Coordinates: ({lat}°, {lng}°)\nCountry: {CountryResult}"
+            )
+        else:
+            responseMessage = (
+                f"On {timeString}, the ISS was flying over {StateResult}, {CountryResult} "
+                f"at coordinates ({lat}°, {lng}°)."
+            )
        
         # print the response message
         print("Sending to Webex: " +responseMessage)
 
 # 13. Complete the code to post the message to the Webex room.         
         # the Webex HTTP headers, including the Authoriztion and Content-Type
-        HTTPHeaders = { 
-                             "Authorization": <!!!REPLACEME!!!>,
-                             "Content-Type": "application/json"
-                           }
-        
+       HTTPHeaders = {
+            "Authorization": accessToken,
+            "Content-Type": "application/json"
+        }
+
         PostData = {
-                            "roomId": <!!!REPLACEME!!!>,
-                            "text": <!!!REPLACEME!!!>
-                        }
-        # Post the call to the Webex message API.
-        r = requests.post( "<!!!REPLACEME with URL!!!>", 
-                              data = json.dumps(<!!!REPLACEME!!!>), 
-                              headers = <!!!REPLACEME!!!>
-                         )
-        <!!!REPLACEME with code for error handling in case request not successfull>
+            "roomId": roomIdToGetMessages,
+            "text": responseMessage
+        }
+       
+        r = requests.post(
+            "https://webexapis.com/v1/messages",
+            data=json.dumps(PostData),
+            headers=HTTPHeaders
+        )
+        if r.status_code != 200:
+            print("Failed to post message to Webex. Status code: {}, Text: {}".format(r.status_code, r.text))
+        else:
+            print("Message successfully posted to Webex.")
                 
+
 
 
 
