@@ -14,4 +14,4 @@ def get_access_token():
         user_token = input("Please enter your Webex access token: ")
         return f"Bearer {user_token}"
     else:
-        return "Bearer "
+        return "Bearer NzNiYTFkOGQtZjIwZS00MjU5LTliNWYtYzA1YTFmMmI3NWE0MWQ3MjZlYjAtYjA5_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9 "
