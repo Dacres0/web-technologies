@@ -15,3 +15,14 @@ def get_access_token():
         return f"Bearer {user_token}"
     else:
         return "Bearer NzNiYTFkOGQtZjIwZS00MjU5LTliNWYtYzA1YTFmMmI3NWE0MWQ3MjZlYjAtYjA5_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9 "
+
+def get_rooms(access_token):
+    r = requests.get("https://webexapis.com/v1/rooms", headers={"Authorization": access_token})
+    if r.status_code != 200:
+        raise Exception(f"Incorrect reply from Webex API. Status code: {r.status_code}. Text: {r.text}")
+
+    rooms = r.json()["items"]
+    print("\nList of available rooms:")
+    for room in rooms:
+        print(f"Room Type: {room['type']} | Title: {room['title']}")
+    return rooms
