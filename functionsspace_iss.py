@@ -8,3 +8,10 @@
 #post_message(room_id, text, access_token) – posts to Webex
 #monitor_room(room_id, access_token, maps_api_key) – main loop
 
+def get_access_token():
+    choice = input("Do you wish to use the hard-coded Webex token? (y/n) ")
+    if choice.lower() == 'n':
+        user_token = input("Please enter your Webex access token: ")
+        return f"Bearer {user_token}"
+    else:
+        return "Bearer "
