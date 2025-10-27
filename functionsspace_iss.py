@@ -61,3 +61,11 @@ def get_iss_location():
         "lon": data["iss_position"]["longitude"],
         "timestamp": data["timestamp"]
     }
+
+def reverse_geocode(lat, lon, api_key):
+    """Reverse geocode coordinates to get address details."""
+    params = {"key": api_key, "lat": lat, "lon": lon, "format": "json"}
+    r = requests.get("https://us1.locationiq.com/v1/reverse.php", params=params)
+    if r.status_code != 200:
+        return None
+    return r.json().get("address", {})
