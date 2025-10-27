@@ -48,3 +48,16 @@ def get_latest_message(room_id, access_token):
     if not items:
         return None
     return items[0]["text"]
+
+def get_iss_location():
+    """Get current ISS position from open-notify API."""
+    r = requests.get("http://api.open-notify.org/iss-now.json")
+    if r.status_code != 200 or r.json().get("message") != "success":
+        return None
+
+    data = r.json()
+    return {
+        "lat": data["iss_position"]["latitude"],
+        "lon": data["iss_position"]["longitude"],
+        "timestamp": data["timestamp"]
+    }
