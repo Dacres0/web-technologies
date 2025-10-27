@@ -36,3 +36,15 @@ def select_room(rooms):
                 print(f"Found room: {room['title']}")
                 return room["id"], room["title"]
         print("No room found. Please try again.")
+
+def get_latest_message(room_id, access_token):
+    """Get the latest message in a Webex room."""
+    params = {"roomId": room_id, "max": 1}
+    r = requests.get("https://webexapis.com/v1/messages", params=params, headers={"Authorization": access_token})
+    if r.status_code != 200:
+        raise Exception(f"Incorrect reply from Webex API. Status code: {r.status_code}. Text: {r.text}")
+
+    items = r.json().get("items", [])
+    if not items:
+        return None
+    return items[0]["text"]
