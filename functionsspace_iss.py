@@ -26,3 +26,13 @@ def get_rooms(access_token):
     for room in rooms:
         print(f"Room Type: {room['type']} | Title: {room['title']}")
     return rooms
+
+def select_room(rooms):
+    """Let the user choose a room by partial name."""
+    while True:
+        room_name = input("Which room should be monitored for the /seconds messages? ")
+        for room in rooms:
+            if room_name.lower() in room["title"].lower():
+                print(f"Found room: {room['title']}")
+                return room["id"], room["title"]
+        print("No room found. Please try again.")
