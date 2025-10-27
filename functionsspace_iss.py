@@ -69,3 +69,83 @@ def reverse_geocode(lat, lon, api_key):
     if r.status_code != 200:
         return None
     return r.json().get("address", {})
+
+def format_iss_message(lat, lon, timestamp, address):
+    """Create a human-readable message from ISS location and address."""
+    time_str = time.ctime(timestamp)
+    country_code = address.get("country_code", "XZ").upper()
+    state = address.get("state", "Unknown")
+    city = address.get("city", address.get("town", "Unknown"))
+
+    if country_code != "XZ":
+        country_name = countries.get(country_code).name
+    else:
+        country_name = "an unknown region"
+
+    if country_code == "XZ":
+        return f"On {time_str}, the ISS was flying over a body of water at latitude {lat}° and longitude {lon}°."
+    elif city != "Unknown":
+        return (f"In {city}, {state}, the ISS was flying over on {time_str}.\n"
+                f"Coordinates: ({lat}°, {lon}°)\nCountry: {country_name}")
+    else:
+        return f"On {time_str}, the ISS was flying over {state}, {country_name} at coordinates ({lat}°, {lon}°)."
+
+
+def post_message(room_id, text, access_token):
+    """Send a message to a Webex room."""
+    headers = {"Authorization": access_token, "Content-Type": "application/json"}
+    data = {"roomId": room_id, "text": text}
+    r = requests.post("https://webexapis.com/v1/messages", data=json.dumps(data), headers=headers)
+    if r.status_code != 200:
+        print(f"Failed to post message: {r.text}")
+    else:
+        print("Message successfully posted to Webex.")
+
+
+def monitor_room(room_id, access_token, maps_api_key):
+    """Continuously monitor room for /seconds commands."""
+    print("\nMonitoring room for /<seconds> messages...\n")
+    while True:
+        time.sleep(1)
+        message = get_latest_message(room_id, access_token)
+        if not message:
+            continue
+
+        print(f"Latest message: {message}")
+
+        if not message.startswith("/"):
+            continue
+
+        command = message[1:]
+        if not command.isdigit():
+            print("Invalid command. Use /<number> (e.g. /5).")
+            continue
+
+        seconds = min(int(command), 5)
+        time.sleep(seconds)
+
+        iss = get_iss_location()
+        if not iss:
+            print("Error getting ISS location.")
+            continue
+
+        address = reverse_geocode(iss["lat"], iss["lon"], maps_api_key)
+        if not address:
+            print("Error reverse geocoding coordinates.")
+            continue
+
+        msg = format_iss_message(iss["lat"], iss["lon"], iss["timestamp"], address)
+        print(f"Sending message: {msg}")
+        post_message(room_id, msg, access_token)
+
+
+def main():
+    access_token = get_access_token()
+    rooms = get_rooms(access_token)
+    room_id, room_title = select_room(rooms)
+    maps_api_key = input("Enter your LocationIQ (or other) API key: ")
+    monitor_room(room_id, access_token, maps_api_key)
+
+
+if __name__ == "__main__":
+    main()
