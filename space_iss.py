@@ -84,7 +84,7 @@ while True:
         timeString = time.ctime(timestamp)
 
         mapsAPIGetParameters = {
-            "key": "<YOUR_LOCATIONIQ_OR_OTHER_API_KEY>",
+            "key": "MGVmNDVhNzktODJkYi00OTZkLWJiYTEtOGJlYTk1YTI5NjZkOTYxMGYyM2UtMDU2_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9",
             "lat": lat,
             "lon": lng,
             "format": "json"
@@ -144,6 +144,7 @@ while True:
             print("Message successfully posted to Webex.")
 
                 
+
 
 
 
