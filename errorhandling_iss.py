@@ -205,3 +205,31 @@ def monitor_room(room_id, access_token, maps_api_key):
         msg = format_iss_message(iss["lat"], iss["lon"], iss["timestamp"], addr)
         print(f"Sending message: {msg}")
         post_message(room_id, msg, access_token)
+
+def main():
+    """Main program flow."""
+    token = get_access_token()
+    if not token:
+        print("❌ No access token. Exiting.")
+        return
+
+    rooms = get_rooms(token)
+    if not rooms:
+        print("❌ No rooms available. Exiting.")
+        return
+
+    room_id, room_title = select_room(rooms)
+    if not room_id:
+        print("❌ No room selected. Exiting.")
+        return
+
+    api_key = input("\nEnter your LocationIQ API key: ").strip()
+    if not api_key:
+        print("❌ No API key provided. Exiting.")
+        return
+
+    monitor_room(room_id, token, api_key)
+
+
+if __name__ == "__main__":
+    main()
