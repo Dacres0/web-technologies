@@ -18,7 +18,7 @@ def get_access_token():
         if choice == 'n':
             token = input("Enter your Webex access token: ").strip()
             if not token:
-                print("⚠️ You must enter a token.")
+                print("You must enter a token.")
                 return None
             return f"Bearer {token}"
         else:
@@ -48,18 +48,18 @@ def get_rooms(access_token):
         return rooms
 
     except (ConnectionError, Timeout):
-        print("⚠️ Network issue while trying to reach Webex.")
+        print("Network issue while trying to reach Webex.")
     except RequestException as e:
-        print(f"⚠️ Request failed: {e}")
+        print(f"Request failed: {e}")
     except ValueError:
-        print("⚠️ Could not decode JSON response from Webex.")
+        print("Could not decode JSON response from Webex.")
     return []
 
 
 def select_room(rooms):
     """Ask the user to choose a room by typing part of its name."""
     if not rooms:
-        print("⚠️ No rooms to choose from.")
+        print("No rooms to choose from.")
         return None, None
 
     while True:
@@ -73,7 +73,7 @@ def select_room(rooms):
                 print(f"✅ Found room: {room['title']}")
                 return room["id"], room["title"]
 
-        print("❌ No matching room found. Try again.")
+        print("No matching room found. Try again.")
 
 def get_latest_message(room_id, access_token):
     """Get the most recent message from the specified Webex room."""
@@ -82,7 +82,7 @@ def get_latest_message(room_id, access_token):
         response = requests.get("https://webexapis.com/v1/messages", params=params,
                                 headers={"Authorization": access_token}, timeout=10)
         if response.status_code != 200:
-            print(f"❌ Failed to get messages (status {response.status_code}).")
+            print(f"Failed to get messages (status {response.status_code}).")
             return None
 
         data = response.json()
@@ -92,7 +92,7 @@ def get_latest_message(room_id, access_token):
 
         return messages[0].get("text", "")
     except RequestException as e:
-        print(f"⚠️ Error getting latest message: {e}")
+        print(f"Error getting latest message: {e}")
         return None
 
 
@@ -101,12 +101,12 @@ def get_iss_location():
     try:
         response = requests.get("http://api.open-notify.org/iss-now.json", timeout=10)
         if response.status_code != 200:
-            print("⚠️ Could not get ISS location.")
+            print("Could not get ISS location.")
             return None
 
         data = response.json()
         if data.get("message") != "success":
-            print("⚠️ Invalid ISS API response.")
+            print("Invalid ISS API response.")
             return None
 
         pos = data.get("iss_position", {})
@@ -116,5 +116,92 @@ def get_iss_location():
             "timestamp": data.get("timestamp")
         }
     except RequestException as e:
-        print(f"⚠️ Error contacting ISS API: {e}")
+        print(f"Error contacting ISS API: {e}")
         return None
+
+def reverse_geocode(lat, lon, api_key):
+    """Convert coordinates to a readable address using LocationIQ."""
+    try:
+        params = {"key": api_key, "lat": lat, "lon": lon, "format": "json"}
+        response = requests.get("https://us1.locationiq.com/v1/reverse.php", params=params, timeout=10)
+        if response.status_code != 200:
+            print(f"Reverse geocoding failed ({response.status_code}).")
+            return None
+        return response.json().get("address", {})
+    except RequestException as e:
+        print(f"Error in reverse geocoding: {e}")
+        return None
+
+
+def format_iss_message(lat, lon, timestamp, address):
+    """Turn ISS data into a readable message."""
+    time_str = time.ctime(timestamp)
+    country_code = address.get("country_code", "XZ").upper()
+    state = address.get("state", "Unknown")
+    city = address.get("city", address.get("town", "Unknown"))
+
+    try:
+        country_name = countries.get(country_code).name
+    except KeyError:
+        country_name = "Unknown Country"
+
+    if country_code == "XZ":
+        return f"On {time_str}, the ISS was over the ocean at ({lat}°, {lon}°)."
+    elif city != "Unknown":
+        return f"On {time_str}, the ISS was above {city}, {state}, {country_name}.\nCoordinates: ({lat}°, {lon}°)"
+    else:
+        return f"On {time_str}, the ISS was above {state}, {country_name}.\nCoordinates: ({lat}°, {lon}°)"
+
+
+def post_message(room_id, text, access_token):
+    """Post a message to the selected Webex room."""
+    try:
+        headers = {"Authorization": access_token, "Content-Type": "application/json"}
+        data = {"roomId": room_id, "text": text}
+        response = requests.post("https://webexapis.com/v1/messages",
+                                 data=json.dumps(data), headers=headers, timeout=10)
+        if response.status_code == 200:
+            print("Message posted successfully.")
+        else:
+            print(f"Failed to post message. {response.text}")
+    except RequestException as e:
+        print(f"Error sending message: {e}")
+
+
+def monitor_room(room_id, access_token, maps_api_key):
+    """Watch the selected room for '/seconds' commands."""
+    print("\nMonitoring the room for messages like '/5'...\n")
+
+    while True:
+        time.sleep(1)
+        msg = get_latest_message(room_id, access_token)
+        if not msg:
+            continue
+
+        print(f"Last message: {msg}")
+
+        if not msg.startswith("/"):
+            continue
+
+        cmd = msg[1:]
+        if not cmd.isdigit():
+            print("Invalid command. Please use /<number> (e.g. /5).")
+            continue
+
+        seconds = min(int(cmd), 5)
+        print(f"Waiting {seconds} seconds...")
+        time.sleep(seconds)
+
+        iss = get_iss_location()
+        if not iss:
+            print("Could not get ISS location.")
+            continue
+
+        addr = reverse_geocode(iss["lat"], iss["lon"], maps_api_key)
+        if not addr:
+            print("Could not reverse geocode location.")
+            continue
+
+        msg = format_iss_message(iss["lat"], iss["lon"], iss["timestamp"], addr)
+        print(f"Sending message: {msg}")
+        post_message(room_id, msg, access_token)
