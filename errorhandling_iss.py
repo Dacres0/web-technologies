@@ -75,3 +75,46 @@ def select_room(rooms):
 
         print("❌ No matching room found. Try again.")
 
+def get_latest_message(room_id, access_token):
+    """Get the most recent message from the specified Webex room."""
+    try:
+        params = {"roomId": room_id, "max": 1}
+        response = requests.get("https://webexapis.com/v1/messages", params=params,
+                                headers={"Authorization": access_token}, timeout=10)
+        if response.status_code != 200:
+            print(f"❌ Failed to get messages (status {response.status_code}).")
+            return None
+
+        data = response.json()
+        messages = data.get("items", [])
+        if not messages:
+            return None
+
+        return messages[0].get("text", "")
+    except RequestException as e:
+        print(f"⚠️ Error getting latest message: {e}")
+        return None
+
+
+def get_iss_location():
+    """Get the current ISS location using the open-notify API."""
+    try:
+        response = requests.get("http://api.open-notify.org/iss-now.json", timeout=10)
+        if response.status_code != 200:
+            print("⚠️ Could not get ISS location.")
+            return None
+
+        data = response.json()
+        if data.get("message") != "success":
+            print("⚠️ Invalid ISS API response.")
+            return None
+
+        pos = data.get("iss_position", {})
+        return {
+            "lat": pos.get("latitude"),
+            "lon": pos.get("longitude"),
+            "timestamp": data.get("timestamp")
+        }
+    except RequestException as e:
+        print(f"⚠️ Error contacting ISS API: {e}")
+        return None
