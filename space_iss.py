@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import requests 
 from iso3166 import countries
 
 
@@ -153,6 +154,7 @@ while True:
             print(f"Failed to post message to Webex. Status code: {r.status_code}, Text: {r.text}")
         else:
             print("Message successfully posted to Webex.")
+
 
 
 
