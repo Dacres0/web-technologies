@@ -10,7 +10,7 @@ if choice.lower() == 'n':
     user_token = input("Please enter your Webex access token: ")
     accessToken = f"Bearer {user_token}"
 else:
-    accessToken = "Bearer MGVmNDVhNzktODJkYi00OTZkLWJiYTEtOGJlYTk1YTI5NjZkOTYxMGYyM2UtMDU2_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
+    accessToken = "Bearer N2E2OGQ5YjQtZTliOS00Y2I0LWE2ZmItMjRiMDYxZDMxOGE1MDJiMjk4YmItOGU3_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
 
 r = requests.get("https://webexapis.com/v1/rooms", headers={"Authorization": accessToken})
 
@@ -153,6 +153,7 @@ while True:
             print(f"Failed to post message to Webex. Status code: {r.status_code}, Text: {r.text}")
         else:
             print("Message successfully posted to Webex.")
+
 
 
 
