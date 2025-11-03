@@ -8,13 +8,20 @@
 #post_message(room_id, text, access_token) – posts to Webex
 #monitor_room(room_id, access_token, maps_api_key) – main loop
 
+import requests
+import json
+import time
+from iso3166 import countries
+
+
 def get_access_token():
     choice = input("Do you wish to use the hard-coded Webex token? (y/n) ")
     if choice.lower() == 'n':
         user_token = input("Please enter your Webex access token: ")
-        return f"Bearer {user_token}"
+        return f"Bearer {user_token.strip()}"
     else:
-        return "Bearer NzNiYTFkOGQtZjIwZS00MjU5LTliNWYtYzA1YTFmMmI3NWE0MWQ3MjZlYjAtYjA5_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9 "
+        return "Bearer NzNiYTFkOGQtZjIwZS00MjU5LTliNWYtYzA1YTFmMmI3NWE0MWQ3MjZlYjAtYjA5_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
+
 
 def get_rooms(access_token):
     r = requests.get("https://webexapis.com/v1/rooms", headers={"Authorization": access_token})
@@ -27,60 +34,70 @@ def get_rooms(access_token):
         print(f"Room Type: {room['type']} | Title: {room['title']}")
     return rooms
 
+
 def select_room(rooms):
-    """Let the user choose a room by partial name."""
     while True:
-        room_name = input("Which room should be monitored for the /seconds messages? ")
+        room_name = input("\nWhich room should be monitored for the /seconds messages? ")
         for room in rooms:
             if room_name.lower() in room["title"].lower():
                 print(f"Found room: {room['title']}")
                 return room["id"], room["title"]
         print("No room found. Please try again.")
 
+
 def get_latest_message(room_id, access_token):
-    """Get the latest message in a Webex room."""
     params = {"roomId": room_id, "max": 1}
-    r = requests.get("https://webexapis.com/v1/messages", params=params, headers={"Authorization": access_token})
-    if r.status_code != 200:
-        raise Exception(f"Incorrect reply from Webex API. Status code: {r.status_code}. Text: {r.text}")
+    try:
+        r = requests.get("https://webexapis.com/v1/messages", params=params, headers={"Authorization": access_token}, timeout=5)
+        r.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching messages: {e}")
+        return None
 
     items = r.json().get("items", [])
     if not items:
         return None
     return items[0]["text"]
 
+
 def get_iss_location():
-    """Get current ISS position from open-notify API."""
-    r = requests.get("http://api.open-notify.org/iss-now.json")
-    if r.status_code != 200 or r.json().get("message") != "success":
+    try:
+        r = requests.get("http://api.open-notify.org/iss-now.json", timeout=5)
+        r.raise_for_status()
+        data = r.json()
+        if data.get("message") != "success":
+            return None
+        return {
+            "lat": data["iss_position"]["latitude"],
+            "lon": data["iss_position"]["longitude"],
+            "timestamp": data["timestamp"]
+        }
+    except requests.exceptions.RequestException as e:
+        print(f"Error getting ISS data: {e}")
         return None
 
-    data = r.json()
-    return {
-        "lat": data["iss_position"]["latitude"],
-        "lon": data["iss_position"]["longitude"],
-        "timestamp": data["timestamp"]
-    }
 
 def reverse_geocode(lat, lon, api_key):
-    """Reverse geocode coordinates to get address details."""
     params = {"key": api_key, "lat": lat, "lon": lon, "format": "json"}
-    r = requests.get("https://us1.locationiq.com/v1/reverse.php", params=params)
-    if r.status_code != 200:
-        return None
-    return r.json().get("address", {})
+    try:
+        r = requests.get("https://us1.locationiq.com/v1/reverse.php", params=params, timeout=5)
+        r.raise_for_status()
+        return r.json().get("address", {})
+    except (requests.exceptions.RequestException, ValueError) as e:
+        print(f"Reverse geocode error: {e}")
+        return {}
+
 
 def format_iss_message(lat, lon, timestamp, address):
-    """Create a human-readable message from ISS location and address."""
     time_str = time.ctime(timestamp)
     country_code = address.get("country_code", "XZ").upper()
     state = address.get("state", "Unknown")
     city = address.get("city", address.get("town", "Unknown"))
 
-    if country_code != "XZ":
+    try:
         country_name = countries.get(country_code).name
-    else:
-        country_name = "an unknown region"
+    except KeyError:
+        country_name = country_code
 
     if country_code == "XZ":
         return f"On {time_str}, the ISS was flying over a body of water at latitude {lat}° and longitude {lon}°."
@@ -92,24 +109,28 @@ def format_iss_message(lat, lon, timestamp, address):
 
 
 def post_message(room_id, text, access_token):
-    """Send a message to a Webex room."""
     headers = {"Authorization": access_token, "Content-Type": "application/json"}
     data = {"roomId": room_id, "text": text}
-    r = requests.post("https://webexapis.com/v1/messages", data=json.dumps(data), headers=headers)
-    if r.status_code != 200:
-        print(f"Failed to post message: {r.text}")
-    else:
-        print("Message successfully posted to Webex.")
+    try:
+        r = requests.post("https://webexapis.com/v1/messages", json=data, headers=headers, timeout=5)
+        if r.status_code == 200:
+            print("Message successfully posted to Webex.")
+        else:
+            print(f"Failed to post message: {r.status_code} {r.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error posting to Webex: {e}")
 
 
 def monitor_room(room_id, access_token, maps_api_key):
-    """Continuously monitor room for /seconds commands."""
     print("\nMonitoring room for /<seconds> messages...\n")
+    last_message = None
+
     while True:
         time.sleep(1)
         message = get_latest_message(room_id, access_token)
-        if not message:
+        if not message or message == last_message:
             continue
+        last_message = message
 
         print(f"Latest message: {message}")
 
@@ -122,6 +143,7 @@ def monitor_room(room_id, access_token, maps_api_key):
             continue
 
         seconds = min(int(command), 5)
+        print(f"Waiting {seconds} seconds before fetching ISS data...")
         time.sleep(seconds)
 
         iss = get_iss_location()
@@ -143,7 +165,7 @@ def main():
     access_token = get_access_token()
     rooms = get_rooms(access_token)
     room_id, room_title = select_room(rooms)
-    maps_api_key = input("Enter your LocationIQ (or other) API key: ")
+    maps_api_key = input("Enter your LocationIQ API key: ")
     monitor_room(room_id, access_token, maps_api_key)
 
 
