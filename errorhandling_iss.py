@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import requests
 from requests.exceptions import RequestException, Timeout, ConnectionError
 from iso3166 import countries
 
