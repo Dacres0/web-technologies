@@ -14,7 +14,7 @@ Python time module.
 | Endpoint to list rooms | `/rooms` |
 | Endpoint to get messages | `/messages` |
 | Endpoint to send message | `/messages` |
-| Required headers | `Authorization: Bearer <your_token>
+| Required headers | `Authorization: Bearer N2E2OGQ5YjQtZTliOS00Y2I0LWE2ZmItMjRiMDYxZDMxOGE1MDJiMjk4YmItOGU3_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9
 | Sample full GET or POST request | `[GET: https://webexapis.com/v1/rooms(Add header: Authorization: Bearer N2E2OGQ5YjQtZTliOS00Y2I0LWE2ZmItMjRiMDYxZDMxOGE1MDJiMjk4YmItOGU3_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9] |
 ---
 ## Section 2: ISS Current Location API (3 marks)
