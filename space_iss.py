@@ -77,7 +77,7 @@ while True:
 
         time.sleep(seconds)
 
-        r = requests.get("http://api.open-notify.org/iss-now.json")
+        r = requests.get("http://api.open-notify.org/iss-now.json", timeout=5)
         json_data = r.json()
 
         if r.status_code != 200 or json_data.get("message") != "success":
@@ -154,6 +154,7 @@ while True:
             print(f"Failed to post message to Webex. Status code: {r.status_code}, Text: {r.text}")
         else:
             print("Message successfully posted to Webex.")
+
 
 
 
