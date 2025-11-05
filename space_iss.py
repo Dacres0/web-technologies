@@ -1,10 +1,9 @@
 import requests
 import json
 import time
-import requests 
 from iso3166 import countries
 
-
+# Prompt for Webex token
 choice = input("Do you wish to use the hard-coded Webex token? (y/n) ")
 
 if choice.lower() == 'n':
@@ -13,8 +12,8 @@ if choice.lower() == 'n':
 else:
     accessToken = "Bearer YmU3NjUyNDYtYWNmMi00NzdhLWE1OGQtOWNkZGQwMmJjM2IwMWJlOTk5YjgtMTQ3_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
 
+# Get Webex rooms
 r = requests.get("https://webexapis.com/v1/rooms", headers={"Authorization": accessToken})
-
 if r.status_code != 200:
     raise Exception(f"Incorrect reply from Webex API. Status code: {r.status_code}. Text: {r.text}")
 
@@ -23,27 +22,26 @@ rooms = r.json()["items"]
 for room in rooms:
     print(f"Room Type: {room['type']} | Title: {room['title']}")
 
+# Choose room
 while True:
     roomNameToSearch = input("Which room should be monitored for the /seconds messages? ")
     roomIdToGetMessages = None
     roomTitleToGetMessages = None
 
     for room in rooms:
-        if room["title"].find(roomNameToSearch) != -1:
-            print(f"Found room with the word {roomNameToSearch}")
-            print(room["title"])
+        if roomNameToSearch.lower() in room["title"].lower():
+            print(f"Found room with '{roomNameToSearch}' → {room['title']}")
             roomIdToGetMessages = room["id"]
             roomTitleToGetMessages = room["title"]
-            print(f"Found room: {roomTitleToGetMessages}")
             break
 
-    if roomIdToGetMessages is None:
-        print(f"Sorry, I didn't find any room with {roomNameToSearch} in it.")
-        print("Please try again...")
-    else:
+    if roomIdToGetMessages:
+        print(f"Monitoring room: {roomTitleToGetMessages}")
         break
+    else:
+        print(f"Sorry, no room found containing '{roomNameToSearch}'. Please try again.\n")
 
-
+# Monitor messages
 while True:
     time.sleep(1)
     GetParameters = {"roomId": roomIdToGetMessages, "max": 1}
@@ -56,20 +54,17 @@ while True:
         raise Exception(f"Incorrect reply from Webex API. Status code: {r.status_code}. Text: {r.text}")
 
     json_data = r.json()
-
     if len(json_data["items"]) == 0:
-        print("No messages found in this room yet. Waiting for a new message...")
         continue
 
-    messages = json_data["items"]
-    message = messages[0]["text"]
+    message = json_data["items"][0]["text"]
     print(f"Latest message received: {message}")
 
     if message.startswith("/"):
         if message[1:].isdigit():
             seconds = int(message[1:])
         else:
-            print("Invalid command format. Please enter /<number> (e.g. /5).")
+            print("Invalid format. Use /<number> (e.g. /5).")
             continue
 
         if seconds > 5:
@@ -77,11 +72,15 @@ while True:
 
         time.sleep(seconds)
 
+        # Get ISS location
         r = requests.get("http://api.open-notify.org/iss-now.json", timeout=5)
-        json_data = r.json()
+        if r.status_code != 200:
+            print("Error retrieving ISS data.")
+            continue
 
-        if r.status_code != 200 or json_data.get("message") != "success":
-            print("Error retrieving ISS location data.")
+        json_data = r.json()
+        if json_data.get("message") != "success":
+            print("ISS API did not return success.")
             continue
 
         lat = json_data["iss_position"]["latitude"]
@@ -89,22 +88,21 @@ while True:
         timestamp = json_data["timestamp"]
         timeString = time.ctime(timestamp)
 
-       
+        # Use your LocationIQ API key
         mapsAPIGetParameters = {
-            "key": "MGVmNDVhNzktODJkYi00OTZkLWJiYTEtOGJlYTk1YTI5NjZkOTYxMGYyM2UtMDU2_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9",
+            "key": "pk.1af4b5d6f1cf9d29dfdfc6ab5c545fe5",  # ✅ Your LocationIQ key
             "lat": lat,
             "lon": lng,
             "format": "json"
         }
 
         r = requests.get("https://us1.locationiq.com/v1/reverse.php", params=mapsAPIGetParameters)
-        json_data = r.json()
-
-        if r.status_code != 200 or "address" not in json_data:
+        if r.status_code != 200:
             print("Error retrieving reverse geocode data.")
             continue
 
-        address = json_data["address"]
+        json_data = r.json()
+        address = json_data.get("address", {})
         CountryResult = address.get("country_code", "XZ").upper()
         StateResult = address.get("state", "Unknown")
         CityResult = address.get("city", address.get("town", "Unknown"))
@@ -116,7 +114,7 @@ while True:
             except KeyError:
                 pass
 
-        
+        # Build the message
         if CountryResult == "XZ":
             responseMessage = (
                 f"On {timeString}, the ISS was flying over a body of water "
@@ -133,9 +131,9 @@ while True:
                 f"at coordinates ({lat}°, {lng}°)."
             )
 
-        print("Sending to Webex: " + responseMessage)
+        print("Sending to Webex:", responseMessage)
 
-       
+        # Post message to Webex
         HTTPHeaders = {
             "Authorization": accessToken,
             "Content-Type": "application/json"
@@ -151,17 +149,9 @@ while True:
                           headers=HTTPHeaders)
 
         if r.status_code != 200:
-            print(f"Failed to post message to Webex. Status code: {r.status_code}, Text: {r.text}")
+            print(f"Failed to post message. Status: {r.status_code}, Text: {r.text}")
         else:
-            print("Message successfully posted to Webex.")
-
-
-
-
-
-
-
-
+            print("Message successfully posted to Webex.\n")
 
 
 
