@@ -30,7 +30,7 @@ while True:
 
     for room in rooms:
         if roomNameToSearch.lower() in room["title"].lower():
-            print(f"✅ Found room: {room['title']}")
+            print(f"Found room: {room['title']}")
             roomIdToGetMessages = room["id"]
             roomTitleToGetMessages = room["title"]
             break
@@ -39,7 +39,7 @@ while True:
         print(f"Monitoring room: {roomTitleToGetMessages}")
         break
     else:
-        print(f"❌ No room found containing '{roomNameToSearch}'. Try again.\n")
+        print(f"No room found containing '{roomNameToSearch}'. Try again.\n")
 
 # Main monitoring loop
 while True:
@@ -65,7 +65,7 @@ while True:
         if message[1:].isdigit():
             seconds = int(message[1:])
         else:
-            print("⚠️ Invalid format. Use /<number> (e.g. /5).")
+            print("Invalid format. Use /<number> (for example, /5).")
             continue
 
         # Cap delay at 5 seconds
@@ -75,15 +75,15 @@ while True:
         time.sleep(seconds)
 
         # Get ISS position
-        print("🌍 Fetching ISS location...")
+        print("Fetching ISS location...")
         r = requests.get("http://api.open-notify.org/iss-now.json", timeout=5)
         if r.status_code != 200:
-            print("❌ Error retrieving ISS data.")
+            print("Error retrieving ISS data.")
             continue
 
         json_data = r.json()
         if json_data.get("message") != "success":
-            print("❌ ISS API did not return success.")
+            print("ISS API did not return success.")
             continue
 
         lat = json_data["iss_position"]["latitude"]
@@ -91,9 +91,9 @@ while True:
         timestamp = json_data["timestamp"]
         timeString = time.ctime(timestamp)
 
-        # Reverse geocode using LocationIQ (with debug output)
+        # Reverse geocode using LocationIQ
         mapsAPIGetParameters = {
-            "key": "pk.1af4b5d6f1cf9d29dfdfc6ab5c545fe5",  # ✅ Your LocationIQ key
+            "key": "pk.1af4b5d6f1cf9d29dfdfc6ab5c545fe5",  # Your LocationIQ key
             "lat": lat,
             "lon": lng,
             "format": "json"
@@ -102,59 +102,56 @@ while True:
         try:
             r = requests.get("https://us1.locationiq.com/v1/reverse", params=mapsAPIGetParameters, timeout=10)
 
-            # Debug info
             print(f"[DEBUG] Reverse geocode URL: {r.url}")
             print(f"[DEBUG] Status Code: {r.status_code}")
             print(f"[DEBUG] Response Text (first 500 chars): {r.text[:500]}")
 
-            if r.status_code != 200:
-                print(f"❌ Reverse geocode failed. HTTP {r.status_code}")
+            # Handle when ISS is over the ocean
+            if r.status_code == 404 or "Unable to geocode" in r.text:
+                print("The ISS is currently over the ocean or an uninhabited area.")
+                CountryResult = "XZ"
+                CityResult = "Unknown"
+                StateResult = "Unknown"
+            elif r.status_code != 200:
+                print(f"Reverse geocode failed. HTTP {r.status_code}")
                 continue
+            else:
+                json_data = r.json()
+                address = json_data.get("address", {})
 
-            json_data = r.json()
+                CountryResult = address.get("country_code", "XZ").upper()
+                StateResult = address.get("state", "Unknown")
+                CityResult = address.get("city", address.get("town", "Unknown"))
+                StreetResult = address.get("road", "Unknown")
 
-            if "error" in json_data:
-                print("❌ LocationIQ returned an error:", json_data["error"])
-                continue
-
-            if "address" not in json_data:
-                print("⚠️ No address found in LocationIQ response:", json_data)
-                continue
-
-            address = json_data["address"]
-            CountryResult = address.get("country_code", "XZ").upper()
-            StateResult = address.get("state", "Unknown")
-            CityResult = address.get("city", address.get("town", "Unknown"))
-            StreetResult = address.get("road", "Unknown")
-
-            if CountryResult != "XZ":
-                try:
-                    CountryResult = countries.get(CountryResult).name
-                except KeyError:
-                    pass
+                if CountryResult != "XZ":
+                    try:
+                        CountryResult = countries.get(CountryResult).name
+                    except KeyError:
+                        pass
 
         except Exception as e:
-            print(f"❌ Error while getting reverse geocode: {e}")
+            print(f"Error while getting reverse geocode: {e}")
             continue
 
         # Build message to post
         if CountryResult == "XZ":
             responseMessage = (
-                f"🛰 On {timeString}, the ISS was flying over a body of water "
+                f"On {timeString}, the ISS was flying over a body of water "
                 f"at latitude {lat}° and longitude {lng}°."
             )
         elif CityResult != "Unknown":
             responseMessage = (
-                f"🛰 In {CityResult}, {StateResult}, the ISS was flying over on {timeString}.\n"
+                f"In {CityResult}, {StateResult}, the ISS was flying over on {timeString}.\n"
                 f"Coordinates: ({lat}°, {lng}°)\nCountry: {CountryResult}"
             )
         else:
             responseMessage = (
-                f"🛰 On {timeString}, the ISS was flying over {StateResult}, {CountryResult} "
+                f"On {timeString}, the ISS was flying over {StateResult}, {CountryResult} "
                 f"at coordinates ({lat}°, {lng}°)."
             )
 
-        print("💬 Sending to Webex:", responseMessage)
+        print("Sending to Webex:", responseMessage)
 
         # Post message back to Webex
         HTTPHeaders = {
@@ -172,12 +169,9 @@ while True:
                           headers=HTTPHeaders)
 
         if r.status_code != 200:
-            print(f"❌ Failed to post message. Status: {r.status_code}, Text: {r.text}")
+            print(f"Failed to post message. Status: {r.status_code}, Text: {r.text}")
         else:
-            print("✅ Message successfully posted to Webex.\n")
-
-
-
+            print("Message successfully posted to Webex.\n")
 
 
 
