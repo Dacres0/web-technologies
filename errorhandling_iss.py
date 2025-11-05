@@ -123,7 +123,7 @@ def get_iss_location():
 def reverse_geocode(lat, lon, api_key):
     """Convert coordinates to a readable address using LocationIQ."""
     try:
-        params = {"key": api_key, "lat": lat, "lon": lon, "format": "json"}
+        params = {"pk.1af4b5d6f1cf9d29dfdfc6ab5c545fe5": api_key, "lat": lat, "lon": lon, "format": "json"}
         response = requests.get("https://us1.locationiq.com/v1/reverse.php", params=params, timeout=10)
         if response.status_code != 200:
             print(f"Reverse geocoding failed ({response.status_code}).")
