@@ -101,7 +101,7 @@ while True:
 
         try:
             r = requests.get("https://us1.locationiq.com/v1/reverse", params=mapsAPIGetParameters, timeout=10)
-
+#asked chatgpt whats problem with code, they said add this, so i added it to test what was wrong, turns out the iss was just over water
             print(f"[DEBUG] Reverse geocode URL: {r.url}")
             print(f"[DEBUG] Status Code: {r.status_code}")
             print(f"[DEBUG] Response Text (first 500 chars): {r.text[:500]}")
@@ -134,7 +134,7 @@ while True:
             print(f"Error while getting reverse geocode: {e}")
             continue
 
-        # Build message to post
+        
         if CountryResult == "XZ":
             responseMessage = (
                 f"On {timeString}, the ISS was flying over a body of water "
@@ -172,6 +172,7 @@ while True:
             print(f"Failed to post message. Status: {r.status_code}, Text: {r.text}")
         else:
             print("Message successfully posted to Webex.\n")
+
 
 
 
