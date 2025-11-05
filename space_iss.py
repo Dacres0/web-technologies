@@ -3,7 +3,7 @@ import json
 import time
 from iso3166 import countries
 
-# Prompt user for Webex token
+
 choice = input("Do you wish to use the hard-coded Webex token? (y/n) ")
 
 if choice.lower() == 'n':
@@ -12,7 +12,7 @@ if choice.lower() == 'n':
 else:
     accessToken = "Bearer YmU3NjUyNDYtYWNmMi00NzdhLWE1OGQtOWNkZGQwMmJjM2IwMWJlOTk5YjgtMTQ3_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
 
-# Get list of Webex rooms
+
 r = requests.get("https://webexapis.com/v1/rooms", headers={"Authorization": accessToken})
 if r.status_code != 200:
     raise Exception(f"Incorrect reply from Webex API. Status code: {r.status_code}. Text: {r.text}")
@@ -22,7 +22,7 @@ rooms = r.json()["items"]
 for room in rooms:
     print(f"Room Type: {room['type']} | Title: {room['title']}")
 
-# Choose room to monitor
+
 while True:
     roomNameToSearch = input("\nWhich room should be monitored for the /seconds messages? ")
     roomIdToGetMessages = None
@@ -41,7 +41,7 @@ while True:
     else:
         print(f"No room found containing '{roomNameToSearch}'. Try again.\n")
 
-# Main monitoring loop
+
 while True:
     time.sleep(1)
     GetParameters = {"roomId": roomIdToGetMessages, "max": 1}
@@ -60,7 +60,7 @@ while True:
     message = json_data["items"][0]["text"]
     print(f"Latest message received: {message}")
 
-    # Only respond to commands starting with "/"
+    
     if message.startswith("/"):
         if message[1:].isdigit():
             seconds = int(message[1:])
@@ -68,7 +68,7 @@ while True:
             print("Invalid format. Use /<number> (for example, /5).")
             continue
 
-        # Cap delay at 5 seconds
+        
         if seconds > 5:
             seconds = 5
 
@@ -106,7 +106,7 @@ while True:
             print(f"[DEBUG] Status Code: {r.status_code}")
             print(f"[DEBUG] Response Text (first 500 chars): {r.text[:500]}")
 
-            # Handle when ISS is over the ocean
+            
             if r.status_code == 404 or "Unable to geocode" in r.text:
                 print("The ISS is currently over the ocean or an uninhabited area.")
                 CountryResult = "XZ"
@@ -172,6 +172,7 @@ while True:
             print(f"Failed to post message. Status: {r.status_code}, Text: {r.text}")
         else:
             print("Message successfully posted to Webex.\n")
+
 
 
 
