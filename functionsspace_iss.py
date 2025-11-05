@@ -78,7 +78,7 @@ def get_iss_location():
 
 
 def reverse_geocode(lat, lon, api_key):
-    params = {"key": api_key, "lat": lat, "lon": lon, "format": "json"}
+    params = {"pk.1af4b5d6f1cf9d29dfdfc6ab5c545fe5": api_key, "lat": lat, "lon": lon, "format": "json"}
     try:
         r = requests.get("https://us1.locationiq.com/v1/reverse.php", params=params, timeout=5)
         r.raise_for_status()
