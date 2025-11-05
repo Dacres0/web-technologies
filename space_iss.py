@@ -91,7 +91,7 @@ while True:
         timestamp = json_data["timestamp"]
         timeString = time.ctime(timestamp)
 
-        # Reverse geocode using LocationIQ
+        # Reverse geocode using LocationIQ (with debug output)
         mapsAPIGetParameters = {
             "key": "pk.1af4b5d6f1cf9d29dfdfc6ab5c545fe5",  # ✅ Your LocationIQ key
             "lat": lat,
@@ -102,9 +102,13 @@ while True:
         try:
             r = requests.get("https://us1.locationiq.com/v1/reverse", params=mapsAPIGetParameters, timeout=10)
 
+            # Debug info
+            print(f"[DEBUG] Reverse geocode URL: {r.url}")
+            print(f"[DEBUG] Status Code: {r.status_code}")
+            print(f"[DEBUG] Response Text (first 500 chars): {r.text[:500]}")
+
             if r.status_code != 200:
-                print(f"❌ Reverse geocode failed. Status: {r.status_code}")
-                print("Response text:", r.text)
+                print(f"❌ Reverse geocode failed. HTTP {r.status_code}")
                 continue
 
             json_data = r.json()
@@ -171,10 +175,6 @@ while True:
             print(f"❌ Failed to post message. Status: {r.status_code}, Text: {r.text}")
         else:
             print("✅ Message successfully posted to Webex.\n")
-
-
-
-
 
 
 
