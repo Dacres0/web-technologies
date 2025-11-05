@@ -24,7 +24,7 @@ def get_access_token():
             return f"Bearer {token}"
         else:
             # Normally you wouldn’t hardcode this in a real project!
-            return "BearerN2E2OGQ5YjQtZTliOS00Y2I0LWE2ZmItMjRiMDYxZDMxOGE1MDJiMjk4YmItOGU3_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
+            return "Bearer YmU3NjUyNDYtYWNmMi00NzdhLWE1OGQtOWNkZGQwMmJjM2IwMWJlOTk5YjgtMTQ3_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
     except Exception as e:
         print(f"Error getting access token: {e}")
         return None
