@@ -8,6 +8,7 @@
 #post_message(room_id, text, access_token) – posts to Webex
 #monitor_room(room_id, access_token, maps_api_key) – main loop
 
+#these are all my functions i have used below to store the data 
 import requests
 import json
 import time
