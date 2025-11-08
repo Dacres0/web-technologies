@@ -74,7 +74,7 @@ while True:
 
         time.sleep(seconds)
 
-        # Get ISS position
+        
         print("Fetching ISS location...")
         r = requests.get("http://api.open-notify.org/iss-now.json", timeout=5)
         if r.status_code != 200:
@@ -91,7 +91,7 @@ while True:
         timestamp = json_data["timestamp"]
         timeString = time.ctime(timestamp)
 
-        # Reverse geocode using LocationIQ
+        
         mapsAPIGetParameters = {
             "key": "pk.1af4b5d6f1cf9d29dfdfc6ab5c545fe5",  # Your LocationIQ key
             "lat": lat,
@@ -153,7 +153,7 @@ while True:
 
         print("Sending to Webex:", responseMessage)
 
-        # Post message back to Webex
+        
         HTTPHeaders = {
             "Authorization": accessToken,
             "Content-Type": "application/json"
@@ -172,6 +172,7 @@ while True:
             print(f"Failed to post message. Status: {r.status_code}, Text: {r.text}")
         else:
             print("Message successfully posted to Webex.\n")
+
 
 
 
