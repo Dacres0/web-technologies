@@ -20,7 +20,7 @@ def get_access_token():
         user_token = input("Please enter your Webex access token: ")
         return f"Bearer {user_token.strip()}"
     else:
-        return "Bearer ZWU3M2VjN2YtZWJkNC00M2E1LWFhNmEtMzc2MzZkNmY2MjIwOWJhYmUzOGQtMWQ1_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
+        return "Bearer MzhiM2Y2N2EtNDhjNC00NDk3LTgwYjktNjg2YjIyMTQyZWE4ZjY0Mzg2YzUtMzQ2_P0A1_636b97a0-b0af-4297-b0e7-480dd517b3f9"
 
 
 def get_rooms(access_token):
